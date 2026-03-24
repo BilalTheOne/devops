@@ -35,3 +35,11 @@ jobs:
 
     - name: Push Docker image
       run: docker push ${{ secrets.DOCKER_USERNAME }}/devops
+    - name: Simulate failure
+      run: |
+        echo "Simulating failure"
+        # exit 1  # uncomment to test rollback mechanism
+    - name: Build Docker image with tag
+      run: docker build -t ${{ secrets.DOCKER_USERNAME }}/devops:${{ github.sha }} .
+    - name: Push Docker image with tag
+      run: docker push ${{ secrets.DOCKER_USERNAME }}/devops:${{ github.sha }}

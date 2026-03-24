@@ -1,14 +1,15 @@
-import logging
-from flask import Flask
+from flask import Flask, Response
+from prometheus_client import Counter, generate_latest, CONTENT_TYPE_LATEST
 
 app = Flask(__name__)
 
-logging.basicConfig(level=logging.INFO)
+# Prometheus counter
+REQUEST_COUNT = Counter("app_requests_total", "Total HTTP requests")
 
-@app.route("/")
-def hello():
-    app.logger.info("Root endpoint was hit")
-    return "Hello DevOps!"
+@app.before_request
+def before_request():
+    REQUEST_COUNT.inc() 
 
-if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000)
+@app.route("/metrics")
+def metrics():
+    return Response(generate_latest(), mimetype=CONTENT_TYPE_LATEST)
