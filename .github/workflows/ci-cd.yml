@@ -27,6 +27,11 @@ jobs:
         sleep 5
         curl -s http://127.0.0.1:5000/ || exit 1
 
+    - name: Log in to Docker Hub
+      run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+
     - name: Build Docker image
-      run: |
-        docker build -t hello-devops .
+      run: docker build -t ${{ secrets.DOCKER_USERNAME }}/hello-devops .
+
+    - name: Push Docker image
+      run: docker push ${{ secrets.DOCKER_USERNAME }}/hello-devops
